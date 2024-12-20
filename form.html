@@ -52,7 +52,7 @@
 				<td>操作</td>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody id="tbody">
 			<tr>
 				<td>
 				<form class="layui-form" action="">
@@ -87,13 +87,28 @@
     </div>
   </div> 
   -->
-  <button class="layui-btn" id="download">下载</button>
+  <div style="padding-top: 20px;">
+	<button class="layui-btn" id="clear">清空表格</button>
+	<button class="layui-btn layui-bg-blue" id="download">下载</button>
+  </div>
 	
-</div>
-	
-	
+  	<div style="padding-top: 30px;">
+		<table class="layui-table" lay-data="{height:315, url:'http://8.138.170.187:8080/getListAll', page:true}" id="ID-table-demo-init">
+			<thead>
+			<tr>
+				<th lay-data="{field:'id', width:80, sort: true}">ID</th>
+				<th lay-data="{field:'username', width:80}">姓名</th>
+				<th lay-data="{field:'mySelect', width:80, sort: true}">地区</th>
+				<th lay-data="{field:'section'}">部门</th>
+				<th lay-data="{field:'listJson'}">JSON</th>
+				<th lay-data="{field:'createTime'}">时间</th>
+			</tr>
+			</thead>
+		</table>
+	</div>
 
-
+</div>	
+	
 
 <style>
 
@@ -103,188 +118,286 @@
 	width: 50%; 
 	margin-top:50px;
 }
-	
+
 </style>
 
  
 <script src="https://cdn.jsdelivr.net/npm/layui-src/dist/layui.all.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 <script>
-layui.use(['layer', 'form','table'], function(){
-  var layer = layui.layer
-  ,form = layui.form
-  ,table = layui.table;
-	var $ = layui.$
-	var list = [{"1":"1","2":"2","3":"3","4":"3"}];
-//	var cityList = ["","北京市公安局公安交通管理局","天津市公安交通管理局","河北省公安厅交通管理局","山西省公安厅交通管理局","内蒙古自治区公安厅交通管理局","辽宁省公安厅交通安全管理局","吉林省互联网服务平台","黑龙江省公安交通管理局","上海市公安局交通警察总队","江苏公安厅交通警察总队","浙江省公安厅交通管理局","安徽省公安厅交通管理局","福建省公安厅交警总队","江西省公安厅交通管理局","山东省公安厅交通管理局","河南省公安厅交通管理局","湖北省公安交通管理局","湖南省公安厅交通警察总队","广东省公安厅交通管理局","广西壮族自治区公安厅交通管理局","海南省公安厅交通警察总队","重庆市公安局交通管理局","四川省公安厅交通管理局","贵州省公安厅交通管理局","云南省公安厅交通警察总队","西藏自治区公安厅公安交通管理局","陕西省公安厅交通管理局","甘肃省公安厅交通警察总队","青海省公安厅交通警察总队","宁夏回族自治区公安厅交通管理局","新疆维吾尔自治区公安厅交警总队"];
-	var cityList = ["","广西壮族自治区","山西省","湖南省","山东省","云南省","四川省","贵州省","内蒙古自治区","天津市"]
-  // 使用jQuery填充选项
-  var $select = $('#mySelect');
-  $.each(cityList, function(index, item) {
-    $select.append($('<option>').text(item).attr('value', item));
-  });
- 
-  // 初始化select
-  form.render('select');
-  
-  // 监听select变化
-  form.on('select(mySelect)', function(data){
-  console.log(data);
-	$('#section').empty();
-	var $section = $('#section');
-	$section.append($('<option>').text("").attr('value', ""));
-	if(data.value=="广西壮族自治区"){
-		$section.append($('<option>').text("柳州市车辆管理所").attr('value', "柳州市车辆管理所"));
-		$section.append($('<option>').text("贺州支队车辆管理所").attr('value', "贺州支队车辆管理所"));
-		$section.append($('<option>').text("南宁支队车管所").attr('value', "南宁支队车管所"));
-		$section.append($('<option>').text("梧州支队车管所").attr('value', "梧州支队车管所"));
-		$section.append($('<option>').text("来宾支队车管所").attr('value', "来宾支队车管所"));
-		$section.append($('<option>').text("桂林支队车管所").attr('value', "桂林支队车管所"));	
-	}else if(data.value=="山西省"){
-		$section.append($('<option>').text("临汾支队车管所").attr('value', "临汾支队车管所"));
-		$section.append($('<option>').text("运城市交警支队车管所").attr('value', "运城市交警支队车管所"));
-		$section.append($('<option>').text("大同支队车管所").attr('value', "大同支队车管所"));
-		$section.append($('<option>').text("晋中支队车管所").attr('value', "晋中支队车管所"));
-	}else if(data.value=="湖南省"){
-		$section.append($('<option>').text("株洲支队车管所").attr('value', "株洲支队车管所"));
-		$section.append($('<option>').text("长沙支队车管所").attr('value', "长沙支队车管所"));
-		$section.append($('<option>').text("湘潭支队车管科").attr('value', "湘潭支队车管科"));
-	}else if(data.value=="山东省"){
-		$section.append($('<option>').text("菏泽支队车辆管理所").attr('value', "菏泽支队车辆管理所"));
-		$section.append($('<option>').text("滨州支队车管所").attr('value', "滨州支队车管所"));
-		$section.append($('<option>').text("沂南大队车管所").attr('value', "沂南大队车管所"));
-		$section.append($('<option>').text("临沂支队车管所").attr('value', "临沂支队车管所"));
-		$section.append($('<option>').text("东营市车管所").attr('value', "东营市车管所"));
-		$section.append($('<option>').text("淄博市车辆管理所").attr('value', "淄博市车辆管理所"));
-		$section.append($('<option>').text("潍坊市交警支队车辆管…").attr('value', "潍坊市交警支队车辆管…"));
-	}else if(data.value=="云南省"){
-		$section.append($('<option>').text("昆明支队车管所").attr('value', "昆明支队车管所"));
-	}else if(data.value=="四川省"){
-		$section.append($('<option>').text("成都支队车管所").attr('value', "成都支队车管所"));
-	}else if(data.value=="贵州省"){
-		$section.append($('<option>').text("贵阳支队车管所").attr('value', "贵阳支队车管所"));
-	}else if(data.value=="内蒙古自治区"){
-		$section.append($('<option>').text("呼市支队车管所").attr('value', "呼市支队车管所"));
-	}else if(data.value=="天津市"){
-		$section.append($('<option>').text("车管所市所").attr('value', "车管所市所"));
+	layui.use(['layer', 'form','table'], function(){
+	  var layer = layui.layer
+	  ,form = layui.form
+	  ,table = layui.table;
+		var $ = layui.$
+		var list = [{"1":"1","2":"2","3":"3","4":"3"}];
+	//	var cityList = ["","北京市公安局公安交通管理局","天津市公安交通管理局","河北省公安厅交通管理局","山西省公安厅交通管理局","内蒙古自治区公安厅交通管理局","辽宁省公安厅交通安全管理局","吉林省互联网服务平台","黑龙江省公安交通管理局","上海市公安局交通警察总队","江苏公安厅交通警察总队","浙江省公安厅交通管理局","安徽省公安厅交通管理局","福建省公安厅交警总队","江西省公安厅交通管理局","山东省公安厅交通管理局","河南省公安厅交通管理局","湖北省公安交通管理局","湖南省公安厅交通警察总队","广东省公安厅交通管理局","广西壮族自治区公安厅交通管理局","海南省公安厅交通警察总队","重庆市公安局交通管理局","四川省公安厅交通管理局","贵州省公安厅交通管理局","云南省公安厅交通警察总队","西藏自治区公安厅公安交通管理局","陕西省公安厅交通管理局","甘肃省公安厅交通警察总队","青海省公安厅交通警察总队","宁夏回族自治区公安厅交通管理局","新疆维吾尔自治区公安厅交警总队"];
+		var cityList = ["","广西壮族自治区","山西省","湖南省","山东省","云南省","四川省","贵州省","内蒙古自治区","天津市"]
+	  // 使用jQuery填充选项
+	  var $select = $('#mySelect');
+	  $.each(cityList, function(index, item) {
+		$select.append($('<option>').text(item).attr('value', item));
+	  });
+	 
+	  // 初始化select
+	  form.render('select');
+	  
+	  // 监听select变化
+	  form.on('select(mySelect)', function(data){
+	  console.log(data);
+		$('#section').empty();
+		var $section = $('#section');
+		$section.append($('<option>').text("").attr('value', ""));
+		if(data.value=="广西壮族自治区"){
+			$section.append($('<option>').text("柳州市车辆管理所").attr('value', "柳州市车辆管理所"));
+			$section.append($('<option>').text("贺州支队车辆管理所").attr('value', "贺州支队车辆管理所"));
+			$section.append($('<option>').text("南宁支队车管所").attr('value', "南宁支队车管所"));
+			$section.append($('<option>').text("梧州支队车管所").attr('value', "梧州支队车管所"));
+			$section.append($('<option>').text("来宾支队车管所").attr('value', "来宾支队车管所"));
+			$section.append($('<option>').text("桂林支队车管所").attr('value', "桂林支队车管所"));	
+		}else if(data.value=="山西省"){
+			$section.append($('<option>').text("临汾支队车管所").attr('value', "临汾支队车管所"));
+			$section.append($('<option>').text("运城市交警支队车管所").attr('value', "运城市交警支队车管所"));
+			$section.append($('<option>').text("大同支队车管所").attr('value', "大同支队车管所"));
+			$section.append($('<option>').text("晋中支队车管所").attr('value', "晋中支队车管所"));
+		}else if(data.value=="湖南省"){
+			$section.append($('<option>').text("株洲支队车管所").attr('value', "株洲支队车管所"));
+			$section.append($('<option>').text("长沙支队车管所").attr('value', "长沙支队车管所"));
+			$section.append($('<option>').text("湘潭支队车管科").attr('value', "湘潭支队车管科"));
+		}else if(data.value=="山东省"){
+			$section.append($('<option>').text("菏泽支队车辆管理所").attr('value', "菏泽支队车辆管理所"));
+			$section.append($('<option>').text("滨州支队车管所").attr('value', "滨州支队车管所"));
+			$section.append($('<option>').text("沂南大队车管所").attr('value', "沂南大队车管所"));
+			$section.append($('<option>').text("临沂支队车管所").attr('value', "临沂支队车管所"));
+			$section.append($('<option>').text("东营市车管所").attr('value', "东营市车管所"));
+			$section.append($('<option>').text("淄博市车辆管理所").attr('value', "淄博市车辆管理所"));
+			$section.append($('<option>').text("潍坊市交警支队车辆管…").attr('value', "潍坊市交警支队车辆管…"));
+		}else if(data.value=="云南省"){
+			$section.append($('<option>').text("昆明支队车管所").attr('value', "昆明支队车管所"));
+		}else if(data.value=="四川省"){
+			$section.append($('<option>').text("成都支队车管所").attr('value', "成都支队车管所"));
+		}else if(data.value=="贵州省"){
+			$section.append($('<option>').text("贵阳支队车管所").attr('value', "贵阳支队车管所"));
+		}else if(data.value=="内蒙古自治区"){
+			$section.append($('<option>').text("呼市支队车管所").attr('value', "呼市支队车管所"));
+		}else if(data.value=="天津市"){
+			$section.append($('<option>').text("车管所市所").attr('value', "车管所市所"));
+		}
+	
+		form.render('select');
+	  });
+	  
+	
+	 $('body').on('click', '.add', function() {
+		//你要添加的html
+		var html = '<tr>'+
+				'	<td>'+
+				'	<form class="layui-form" action="">'+
+				'		<select lay-filter="selectOptions" lay-id="1">'+
+				'			<option value=""></option>'+
+				'			<option value="科目一考试费用">科目一考试费用</option>'+
+				'			<option value="科目一补考费用">科目一补考费用</option>'+
+				'			<option value="科目二考试费用">科目二考试费用</option>'+
+				'			<option value="科目二补考费用">科目二补考费用</option>'+
+				'			<option value="道路驾驶技能考">道路驾驶技能考...</option>'+
+				'			<option value="道路驾驶技能补">道路驾驶技能补...</option>'+
+				'			<option value="驾驶证工本费">驾驶证工本费</option>'+
+				'		</select>'+
+				'		</form>'+
+				'	</td>'+
+				'	<td><input type="text" class="layui-input" name="money"></td>'+
+				'	<td><input type="text" class="layui-input" name="time" value="2024-"></td>'+
+				'	<td>'+
+					'<button class="layui-btn layui-btn-danger layui-btn-xs del">删除</button>'+
+				'	</td>'+
+				'</tr>';
+		$(html).appendTo($('#table tbody:last'));
+		form.render();//因为有select元素，所有添加后要重新渲染一次
+	});
+	
+	$('body').on('click', '.del', function() {
+		if ($('#table tbody tr').length === 1) {
+			layer.msg('只有一条不允许删除。', {
+				time : 2000
+			});
+		} else {
+			//删除当前按钮所在的tr
+			$(this).closest('tr').remove();
+		}
+	});
+
+	function clearTable() {
+		$("#username").val("");
+		$("#mySelect").val("");
+		$("#section").val("");
+		$("#tbody").empty();
+		var html = '<tr>'+
+				'	<td>'+
+				'	<form class="layui-form" action="">'+
+				'		<select lay-filter="selectOptions" lay-id="1">'+
+				'			<option value=""></option>'+
+				'			<option value="科目一考试费用">科目一考试费用</option>'+
+				'			<option value="科目一补考费用">科目一补考费用</option>'+
+				'			<option value="科目二考试费用">科目二考试费用</option>'+
+				'			<option value="科目二补考费用">科目二补考费用</option>'+
+				'			<option value="道路驾驶技能考">道路驾驶技能考...</option>'+
+				'			<option value="道路驾驶技能补">道路驾驶技能补...</option>'+
+				'			<option value="驾驶证工本费">驾驶证工本费</option>'+
+				'		</select>'+
+				'		</form>'+
+				'	</td>'+
+				'	<td><input type="text" class="layui-input" name="money"></td>'+
+				'	<td><input type="text" class="layui-input" name="time" value="2024-"></td>'+
+				'	<td>'+
+					'<button class="layui-btn layui-btn-danger layui-btn-xs del">删除</button>'+
+				'	</td>'+
+				'</tr>';
+		$(html).appendTo($('#table tbody:last'));
+		form.render();
 	}
 
+	$('#clear').on('click', function() {
+		clearTable();
+	});
 
-	form.render('select');
-  });
-  
-
- $('body').on('click', '.add', function() {
-    //你要添加的html
-    var html = '<tr>'+
-			'	<td>'+
-			'	<form class="layui-form" action="">'+
-			'		<select lay-filter="selectOptions" lay-id="1">'+
-			'			<option value=""></option>'+
-			'			<option value="科目一考试费用">科目一考试费用</option>'+
-			'			<option value="科目一补考费用">科目一补考费用</option>'+
-			'			<option value="科目二考试费用">科目二考试费用</option>'+
-			'			<option value="科目二补考费用">科目二补考费用</option>'+
-			'			<option value="道路驾驶技能考">道路驾驶技能考...</option>'+
-			'			<option value="道路驾驶技能补">道路驾驶技能补...</option>'+
-			'			<option value="驾驶证工本费">驾驶证工本费</option>'+
-			'		</select>'+
-			'		</form>'+
-			'	</td>'+
-			'	<td><input type="text" class="layui-input" name="money"></td>'+
-			'	<td><input type="text" class="layui-input" name="time" value="2024-"></td>'+
-			'	<td>'+
-				'<button class="layui-btn layui-btn-danger layui-btn-xs del">删除</button>'+
-			'	</td>'+
-			'</tr>';
-    $(html).appendTo($('#table tbody:last'));
-    form.render();//因为有select元素，所有添加后要重新渲染一次
-});
-
-$('body').on('click', '.del', function() {
-	if ($('#table tbody tr').length === 1) {
-		layer.msg('只有一条不允许删除。', {
-			time : 2000
+	 $('body').on('click', '.ok', function() {
+		var json = {};
+		json.name = document.getElementById('username').value;
+		 
+		json.district = document.getElementById('mySelect').value;
+		 
+		json.section = document.getElementById('section').value;
+		
+		var list = [];
+		$('#table tbody tr').each(function(index){
+			var item = {};
+			$(this).find('td input').each(function(index, td){
+			if(index == 0){
+				item.four = td.value;
+			}else if(index == 1){
+				item.five = td.value;
+			}else if(index == 2){
+				item.six = td.value;
+			}
+			});
+			list[index] = item;
 		});
-	} else {
-        //删除当前按钮所在的tr
-		$(this).closest('tr').remove();
+		json.list = list;
+		$('#over').val('');
+		$('#over').val(JSON.stringify(json));
+	 });
+				
+	function downloadStringAsFile(filename, content) {
+		// 将字符串转换成Blob对象
+		var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+		// 创建一个指向Blob对象的URL
+		var url = URL.createObjectURL(blob);
+		// 创建一个a标签并设置属性
+		var downloadLink = document.createElement('a');
+		downloadLink.href = url;
+		downloadLink.download = filename;
+		// 触发下载
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+		document.body.removeChild(downloadLink);
 	}
-})
+	 
+	// $('#download').on('click', function() {
+	// 	var name = document.getElementById('username').value;
+	// 	var json = {};
+	// 	json.username = document.getElementById('username').value;
+		 
+	// 	json.mySelect = document.getElementById('mySelect').value;
+		 
+	// 	json.section = document.getElementById('section').value;
+		
+	// 	var list = [];
+	// 	$('#table tbody tr').each(function(index){
+	// 		var item = {};
+	// 		$(this).find('td input').each(function(index, td){
+	// 		if(index == 0){
+	// 			item.bm = td.value;
+	// 		}else if(index == 1){
+	// 			item.money = td.value;
+	// 		}else if(index == 2){
+	// 			item.time = td.value;
+	// 		}
+	// 		});
+	// 		list[index] = item;
+	// 	});
+	// 	json.list = list;
+	// 	downloadStringAsFile(name+'.txt', JSON.stringify(json));
+	// })
 
- $('body').on('click', '.ok', function() {
-	var json = {};
-	json.name = document.getElementById('username').value;
-	 
-	json.district = document.getElementById('mySelect').value;
-	 
-	json.section = document.getElementById('section').value;
-	
-	var list = [];
-	$('#table tbody tr').each(function(index){
-		var item = {};
-		$(this).find('td input').each(function(index, td){
-		if(index == 0){
-			item.four = td.value;
-		}else if(index == 1){
-			item.five = td.value;
-		}else if(index == 2){
-			item.six = td.value;
-		}
+	function reloadTable() {
+		table.reload('ID-table-demo-init', { // 你的表格ID
+			url: 'http://8.138.170.187:8080/getListAll' // 数据接口，同初始化数据
 		});
-		list[index] = item;
-	});
-	json.list = list;
-	$('#over').val('');
-	$('#over').val(JSON.stringify(json));
- })
- 
- 
-			
-function downloadStringAsFile(filename, content) {
-    // 将字符串转换成Blob对象
-    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    // 创建一个指向Blob对象的URL
-    var url = URL.createObjectURL(blob);
-    // 创建一个a标签并设置属性
-    var downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = filename;
-    // 触发下载
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-}
- 
-$('#download').on('click', function() {
-	var name = document.getElementById('username').value;
-	var json = {};
-	json.username = document.getElementById('username').value;
-	 
-	json.mySelect = document.getElementById('mySelect').value;
-	 
-	json.section = document.getElementById('section').value;
+	}
+
 	
-	var list = [];
-	$('#table tbody tr').each(function(index){
-		var item = {};
-		$(this).find('td input').each(function(index, td){
-		if(index == 0){
-			item.bm = td.value;
-		}else if(index == 1){
-			item.money = td.value;
-		}else if(index == 2){
-			item.time = td.value;
-		}
+	$('#download').on('click', function() {
+		var index = layer.load(1, {
+		shade: [0.1,'#fff'] //0.1透明度的白色背景
 		});
-		list[index] = item;
+
+		var name = document.getElementById('username').value;
+		
+		if(name == null || name.length == 0){
+			layer.close(index);
+			layer.msg('请输入姓名！');
+			return;
+		}
+
+		var json = {};
+		json.username = document.getElementById('username').value;
+		 
+		json.mySelect = document.getElementById('mySelect').value;
+		 
+		json.section = document.getElementById('section').value;
+		
+		var list = [];
+		$('#table tbody tr').each(function(index){
+			var item = {};
+			$(this).find('td input').each(function(index, td){
+			if(index == 0){
+				item.bm = td.value;
+			}else if(index == 1){
+				item.money = td.value;
+			}else if(index == 2){
+				item.time = td.value;
+			}
+			});
+			list[index] = item;
+		});
+		json.list = list;
+	
+		axios({
+			url: "http://8.138.170.187:8080/down",//接口
+			method: 'POST',
+			responseType: 'blob', //重要 
+			data:json
+		}).then((response) => {
+			const value = new Blob([response.data], {type: 'image/png'});
+			const elink = document.createElement('a');
+			elink.download = name+'.png';
+			elink.style.display = 'none';
+			elink.href = URL.createObjectURL(value);
+			document.body.appendChild(elink);
+			elink.click();
+			URL.revokeObjectURL(elink.href); // 释放URL 对象
+			document.body.removeChild(elink);
+			reloadTable();
+			clearTable();
+			layer.close(index);
+		}).catch((error) => {
+			layer.close(index);
+			layer.msg('下载文件时发生错误：', error.response);
+		});
 	});
-	json.list = list;
-	downloadStringAsFile(name+'.txt', JSON.stringify(json));
-})
-
-
 });
 </script>
-	
+
 </body>
 </html>
